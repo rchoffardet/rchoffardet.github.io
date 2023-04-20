@@ -1,0 +1,78 @@
+baseURL: 'http://example.org/'
+defaultContentLanguage: 'fr'
+title: 'Le blog de Robin'
+theme: 'PaperMod'
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: true
+buildExpired: true
+enableEmoji: true
+
+menu:
+  main:
+    - identifier: Archives
+      name: Archive
+      url: /archives/
+      weight: 10
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 20
+    - identifier: search
+      name: Recherche
+      url: /search/
+      weight: 30
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON # nécessaire pour la recherche
+
+taxonomies:
+  tag: tags
+  category: categories
+
+params:
+  defaultTheme: auto
+
+  ShowCodeCopyButtons: true
+  ShowBreadCrumbs: true
+  ShowToc: true # afficher le sommaire
+  ShowReadingTime: true 
+  ShowPostNavLinks: true
+  hideFooter: true
+  comments: true
+  hidemeta: false
+  hideSummary: false
+
+  homeInfoParams:
+    Title: "Robin Choffardet"
+    Content: |
+      Développeur web passioné, et ~~un peu paresseux~~ qui optimise sa dépense énergétique.  
+      Sur ce blog je te partage des trucs & astuces qui m'ont facilité la vie ainsi que des articles un peu plus complet sur des sujets qui ont éveillé ma curiosité. 
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/rchoffardet"
+    - name: Rss
+      url: "index.xml"
+
+  profileMode:
+    enabled: false # needs to be explicitly set
+
+  editPost:
+      URL: "https://github.com/adityatelange/hugo-PaperMod/tree/exampleSite/content"
+      Text: "Suggérer des modifications" # edit text
+      appendFilePath: true # to append file path to Edit link
+
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content", "tags"]
