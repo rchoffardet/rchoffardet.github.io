@@ -1,0 +1,48 @@
+<div id="comments"></div>
+<script>
+function setGiscusTheme(theme) {
+    function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+    }
+    sendMessage({
+    setConfig: {
+        theme: localStorage.getItem("pref-theme"),
+    },
+    });
+}
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+    setTimeout(() => {
+        setGiscusTheme();
+    }, 0);
+})
+
+
+const  theme = localStorage.getItem("pref-theme")  ?? "{{- if eq site.Params.defaultTheme `dark` -}}
+        {{- print " dark" }}
+    {{- end -}}";
+
+localStorage.getItem("pref-theme")
+const attrs = {
+    "src": "https://giscus.app/client.js",
+    "data-repo": "rchoffardet/blog",
+    "data-repo-id": "R_kgDOJZNb-Q",
+    "data-category": "General",
+    "data-category-id": "DIC_kwDOJZNb-c4CWBAK",
+    "data-mapping": "title",
+    "data-strict": "0",
+    "data-reactions-enabled": "1",
+    "data-emit-metadata": "0",
+    "data-input-position": "top",
+    "data-theme": theme,
+    "data-lang": "fr",
+    "data-loading": "lazy",
+    "crossorigin": "anonymous",
+    "async": ""
+}
+const giscusScript = document.createElement("script");
+  Object.entries(attrs).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+    document.getElementById("comments").appendChild(giscusScript);
+</script>
