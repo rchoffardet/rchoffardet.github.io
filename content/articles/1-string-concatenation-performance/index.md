@@ -64,7 +64,7 @@ Then, here are the new results:
 We can see that `string.Concat` outperforms the other strategies, especially with a low amount of items. This kind of performance is possible because of the underlying algorithm of `string.Concat`: it allocates a unique string which is as long as the summed items' length, then it copies every item in the newly created string.
 You can see the implementation [here](https://source.dot.net/#System.Private.CoreLib/src/libraries/System.Private.CoreLib/src/System/String.Manipulation.cs,75e4bdc056f3daf0). This also means that such an algorithm is not possible when enumerable (counting items of an enumerable is slow), so they use another implementation ([here](https://source.dot.net/#System.Private.CoreLib/src/libraries/System.Private.CoreLib/src/System/String.Manipulation.cs,206408f6325aea24)). This second implementation uses an internal string builder called `ValueStringBuilder` (implementation [here](https://source.dot.net/#System.Text.RegularExpressions/src/libraries/Common/src/System/Text/ValueStringBuilder.cs,157e1a7ce4de87da)) which focuses on memory consumption.
 
-Even though, benchmarks show that ValueStringBuilder runs a bit slower than StringBuilder, it also consumes less than half the memory (beware the scale is logarithmic):
+Even though benchmarks show that `ValueStringBuilder` runs a bit slower than StringBuilder, it also consumes less than half the memory (beware the scale is logarithmic):
 ![Graph of string builder comparaison](graph-3.png)
 
 As conclusion:
