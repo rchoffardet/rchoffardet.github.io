@@ -1,5 +1,5 @@
 baseURL: 'http://example.org/'
-defaultContentLanguage: 'fr'
+defaultContentLanguage: 'en'
 title: 'Le blog de Robin'
 theme: 'PaperMod'
 
@@ -49,10 +49,13 @@ params:
   hideSummary: false
 
   homeInfoParams:
-    Title: "Robin Choffardet"
+    Title: "Welcome to my blog"
     Content: |
-      Développeur web passioné, et ~~un peu paresseux~~ qui optimise sa dépense énergétique.  
-      Sur ce blog je te partage des trucs & astuces qui m'ont facilité la vie ainsi que des articles un peu plus complet sur des sujets qui ont éveillé ma curiosité. 
+      Hi! My name is Robin. 
+      I've been a software developer professionally for over 10 years now.
+      I'm a very curious felow and I love to share about my learnings.
+      I will write mostly about web development and especially about C#/.NET.
+      I hope that you will find interesting to follow me and my journey.
 
   socialIcons:
     - name: github
@@ -65,7 +68,7 @@ params:
 
   editPost:
       URL: "https://github.com/rchoffardet/blog/tree/content"
-      Text: "Suggérer des modifications" # edit text
+      Text: "Suggest modifications" # edit text
       appendFilePath: true # to append file path to Edit link
 
   fuseOpts:
