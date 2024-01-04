@@ -4,6 +4,11 @@ date: 2024-01-01T08:21:55+02:00
 draft: false
 summary: 
 tags: 
+- dotnet
+- string
+- concatenation
+- performance
+- benchmark
 ---
 
 Recently, I've had a conversation with Davide Bellone, on LinkedIn about the different strategies of string concatenation and their relative performance (You can read its post [here](https://www.linkedin.com/posts/bellonedavide_csharp-dotnet-activity-7147651609035001856-KsnO?utm_source=share&utm_medium=member_desktop)).
