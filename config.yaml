@@ -67,7 +67,7 @@ params:
     enabled: false # needs to be explicitly set
 
   editPost:
-      URL: "https://github.com/rchoffardet/blog/tree/content"
+      URL: "https://github.com/rchoffardet/blog/tree/main/content"
       Text: "Suggest modifications" # edit text
       appendFilePath: true # to append file path to Edit link
 
