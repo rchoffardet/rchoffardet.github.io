@@ -8,23 +8,23 @@ function setGiscusTheme(theme) {
     }
     sendMessage({
     setConfig: {
-        theme: localStorage.getItem("pref-theme"),
+        theme,
     },
     });
 }
 
-document.getElementById("theme-toggle").addEventListener("click", () => {
-    setTimeout(() => {
-        setGiscusTheme();
-    }, 0);
+document.body.addEventListener("dark-theme-set", () => {
+    setGiscusTheme("dark");
 })
 
+document.body.addEventListener("light-theme-set", () => {
+    setGiscusTheme("light");
+})
 
 const  theme = localStorage.getItem("pref-theme")  ?? "{{- if eq site.Params.defaultTheme `dark` -}}
         {{- print " dark" }}
     {{- end -}}";
 
-localStorage.getItem("pref-theme")
 const attrs = {
     "src": "https://giscus.app/client.js",
     "data-repo": "rchoffardet/blog",

@@ -3,39 +3,51 @@
 {{- /* theme is light */}}
 {{- if (eq site.Params.defaultTheme "light") }}
 <script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    }
-
+    document.addEventListener("DOMContentLoaded", (event) => {
+        if (localStorage.getItem("pref-theme") === "dark") {
+            document.body.classList.add('dark');
+            document.body.dispatchEvent(new CustomEvent('dark-theme-set'))
+        }
+    });
 </script>
 {{- /* theme is dark */}}
 {{- else if (eq site.Params.defaultTheme "dark") }}
 <script>
-    if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    }
+    document.addEventListener("DOMContentLoaded", (event) => {
+        if (localStorage.getItem("pref-theme") === "light") {
+            document.body.classList.remove('dark')
+            document.body.dispatchEvent(new CustomEvent('light-theme-set'))
+        }
+    });
 
 </script>
 {{- else }}
 {{- /* theme is auto */}}
 <script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
+    document.addEventListener("DOMContentLoaded", (event) => {
+        if (localStorage.getItem("pref-theme") === "dark") {
+            document.body.classList.add('dark');
+            document.body.dispatchEvent(new CustomEvent('dark-theme-set'))
+        } else if (localStorage.getItem("pref-theme") === "light") {
+            document.body.classList.remove('dark')
+            document.body.dispatchEvent(new CustomEvent('light-theme-set'))
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+            document.body.dispatchEvent(new CustomEvent('dark-theme-set'))
+        }
+    });
 
 </script>
 {{- end }}
 {{- /* theme-toggle is disabled and theme is auto */}}
 {{- else if (and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme "dark"))}}
 <script>
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
+    document.addEventListener("DOMContentLoaded", (event) => {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+            document.body.dispatchEvent(new CustomEvent('dark-theme-set'))
+        }
+    });
 </script>
 {{- end }}
 
