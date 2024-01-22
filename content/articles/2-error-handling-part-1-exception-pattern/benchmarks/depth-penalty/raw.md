@@ -26,6 +26,3 @@
 
 // 4.4 + 0.66x
 // 15.3 + 3.8x
-
-![Alt text](duration-graph.png)
-![Alt text](allocation.png)
