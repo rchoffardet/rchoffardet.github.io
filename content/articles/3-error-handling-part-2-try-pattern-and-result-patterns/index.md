@@ -1,7 +1,7 @@
 ---
-title: "Erro handling in .NET Part2: The try and the result pattern"
+title: "Erro handling in .NET Part2: The Try and the Result patterns"
 date: 2023-04-20T11:40:21+02:00
-draft: true
+draft: false
 summary: | 
     Le tableau est la structure de données la plus connues et la plus utilisée, actuellement.  
     Mais savez-vous différencier les listes et les tableaux et quand les utiliser ?
@@ -43,7 +43,7 @@ Once again, we have a suboptimal algorithm.
 
 You might know the `TryAdd` method (doc [here](https://learn.microsoft.com/fr-fr/dotnet/api/system.collections.generic.dictionary-2.tryadd?view=net-8.0)) which has been available in the framework since .NET Core 2.0. It is one example of the following pattern, the Try pattern.
 
-## Try pattern
+## The Try pattern
 
 I like to see this pattern as an improved version of the previous one. It does the same things: first checking then doing, but it does that at the same time, in one method call. Thus, it's more efficient.
 The `TryAdd` method of a dictionary (doc [here](https://learn.microsoft.com/fr-fr/dotnet/api/system.collections.generic.dictionary-2.tryadd?view=net-8.0)) is an example of a write action: there is also a read part that we'll see a bit later.
