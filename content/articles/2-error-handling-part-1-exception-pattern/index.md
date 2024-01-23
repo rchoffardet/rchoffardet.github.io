@@ -173,8 +173,7 @@ There is a whole debate about whether dotnet should have _checked exceptions_ li
 Yes **AND** no. As always, it depends. Exceptions are way too convenient to be overlooked.
 There is a reason why there is an exception system in most languages: its convenience.
 
-Systems that are so constrained by performance needs that they cannot use exceptions are not common at all.
-I never saw such systems (at least not in dotnet). So, good chances are that we can keep using them for a while.
+Systems so constrained by performance requirements that they cannot use exceptions, are not common at all. In fact, I've never seen such systems (at least not in dotnet). So, good chances are that we can keep using them for a while.
 However, we can limit their usage to the minimum.
 
 Microsoft recommends using exceptions only for exceptional cases, outside of normal flow.
