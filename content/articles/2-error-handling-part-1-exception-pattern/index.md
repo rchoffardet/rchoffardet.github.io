@@ -1,6 +1,6 @@
 ---
 title: "Error handling in .NET Part 1: The exception pattern"
-date: 2024-01-01T08:21:55+02:00
+date: 2024-01-19T23:21:55+02:00
 draft: false
 summary: 
 tags: 
