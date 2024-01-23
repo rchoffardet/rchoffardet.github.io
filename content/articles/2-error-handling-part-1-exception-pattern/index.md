@@ -74,6 +74,7 @@ It does sound costly. But what are the numbers?
 | Throwing       | 4,739.984 ns | 1,081.137 ns | 59.2608 ns | 0.0381 |     560 B |
 ```
 {{< /spoiler >}}
+Source code is [here](https://github.com/rchoffardet/dotnet-benchmarks/blob/main/Rchoffardet.Benchmarks/ExceptionPerformance/ThrowingExceptionVersusReturningValueBenchmark.cs).
 
 The difference is so big that the bars associated with the code returning a value aren't even shown on the graph. Exceptions are around 3000 times more expensive than a return statement. It also allocates some memory, I assume it's because of the message of the thrown exception. It could also be for internal data of the exception.
 
@@ -123,6 +124,7 @@ To readability, here are the duration graph measuring the CPU consumption and th
 | ThrowIn128CallsWithStackTrace | 128 levels | 504.649 us | 141.4478 us | 7.7532 us | 15.6250 |      - |  203009 B |
 ```
 {{< /spoiler >}}
+Source code is [here](https://github.com/rchoffardet/dotnet-benchmarks/blob/main/Rchoffardet.Benchmarks/ExceptionPerformance/StackTracePenaltyBenchmark.cs).
 
 #### CPU
 ![Comparing CPU consumption of exceptions from different depths](benchmarks/depth-penalty/duration-graph.png)
@@ -147,12 +149,14 @@ The three snippets are all nested at the same level (20 nested calls). In the fi
 | CatchLate   | 16.500 us | 9.1093 us | 0.4993 us | 0.1221 |    1760 B |
 ```
 {{< /spoiler >}}
+Source code is [here](https://github.com/rchoffardet/dotnet-benchmarks/blob/main/Rchoffardet.Benchmarks/ExceptionPerformance/ExceptionCatchingEarlyBenchmark.cs).
 
 Catching early seems to compensate for the bad effect of depth. 
 
 ### CPU contention
 
 ![Comparing CPU time per exception vs per method call](benchmarks/thread-contention/graph.png)
+Source code is [here](https://github.com/rchoffardet/dotnet-benchmarks/blob/main/Rchoffardet.Benchmarks/ExceptionPerformance/ExceptionCpuContentionStopWatch.cs).
 
 Throwing exceptions is expected to be unrelated to thread count. However, contrary to the method calls (whose curve stays relatively flat) exceptions take an increasing amount of time to be thrown and caught. This shows a form of thread contention.
 
