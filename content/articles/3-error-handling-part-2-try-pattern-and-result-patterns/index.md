@@ -1,10 +1,8 @@
 ---
-title: "Erro handling in .NET Part2: The Try and the Result patterns"
+title: "Error handling in .NET Part2: The Try and the Result patterns"
 date: 2023-02-01T00:10:00
 draft: false
-summary: | 
-    Le tableau est la structure de données la plus connues et la plus utilisée, actuellement.  
-    Mais savez-vous différencier les listes et les tableaux et quand les utiliser ?
+summary: 
 tags: 
  - C#
  - dotnet
