@@ -1,7 +1,7 @@
 ---
 title: "Erro handling in .NET Part2: The Try and the Result patterns"
-date: 2023-04-20T11:40:21+02:00
-draft: true
+date: 2023-02-01T00:10:00
+draft: false
 summary: | 
     Le tableau est la structure de données la plus connues et la plus utilisée, actuellement.  
     Mais savez-vous différencier les listes et les tableaux et quand les utiliser ?
@@ -62,11 +62,99 @@ if(dictionary.TryGetValue(42, out string value)) // value is both declared and a
 ```
 Thanks to the returned boolean, we can safely call `Console.WriteLine` without taking the risk to throw a `KeyNotFoundException`.
 
-The `out` parameter is quite neat and was necessary back then: The "new" (introduced in C# 7.0) tuple notation (ex: `(string, int)`) leverages a new structure the `ValueTuple`, which is a value type instead of the "old" `Tuple` that was a reference type. There is a lot to say about both value and reference type, this a not the subject of this blog post (may be a future one, though). The big difference between `ValueTuple` and the regular `Tuple` is that the first one is stack allocated whereas the latter is heap allocated. This means that every time you create a new `Tuple`, it has to be regularly checked up by the garbage collector (GC), and destroyed when it becomes unused. This puts pressure on the GC, and overall it's bad performance-wise when it happens too often. Of course, it's even worse on a hot path.
+The `out` parameter is quite neat and was necessary back then: The "new" (introduced in C# 7.0) tuple notation (ex: `(bool, int)`) leverages a new structure the `ValueTuple`, which is a value type instead of the "old" `Tuple` that was a reference type. There is a lot to say about both value and reference type, this a not the subject of this blog post (may be a future one, though). The big difference between `ValueTuple` and the regular `Tuple` is that the first one is stack allocated whereas the latter is heap allocated. This means that every time you create a new `Tuple`, it has to be regularly checked up by the garbage collector (GC), and destroyed when it becomes unused. This puts pressure on the GC, and overall it's bad performance-wise when it happens too often. Of course, that's especially true for hot paths.
 
 ## The Result pattern
 
+In its most basic form, this pattern is more or less the same as returning the tuple `(bool, ReturnValue)`. If the first item is `true`, then `ReturnValue` is provided if not, it's null. Of course, the return value's type changes depending on the method, so it has to be a generic type:
 
+```csharp
+public struct Result<T>
+{
+    public bool IsSuccessFul { get; private set; }
+    public T? Value { get; private set; }
 
-// TODO make an example with the three methods + valuetuple / tuple
-// and benchmark them
+    public Result(T Value)
+    {
+        IsSuccessful = true;
+        Value = Value;
+    }
+
+    public Result()
+    {
+        IsSuccessful = false;
+    }
+}
+```
+There is no official implementation of this pattern, so you'll have to make your own or use some open-sourced ones. Although most of them are based on classes, I think that it's suboptimal: it produces allocations every time the method is called, which puts additional pressure on the GC for no reason. A small and short-lived bunch of data like this is a typical example where a `struct` is more appropriate. 
+
+The first two patterns ("Check and do" and "Try") are a bit verbose and require conditional blocks. The Result pattern works around this drawback by leveraging a _fluent_ API. This kind of API lets you chain method calls to apply them successively to an initial value, such as Linq does with `IEnumerable<T>`. However, in the case of this pattern, the next link will only be executed if the previous one was successful. Instead of the `Select` as name for the method, let's name it `Then`.
+```csharp
+public static Result<U> Then<T, U>(this Result<T> result, Func<T, U> fn)
+{
+    return result.IsSuccessFul 
+        ? new Result<U>(fn(result.Value))
+        : new Result<U>();
+}
+```
+As you can see, `fn` will only be executed if the result is successful. And that's the basics of the Result pattern. From there, there is a whole tree of possibilities for augmentations. For instance, you could:
+- embed an error value, to contextualize the erroneous case
+- add additional extension methods:
+  - `Or` method that does the opposite of `Then` and allows you to handle a fallback value
+  - `Switch`/`Match` to return one value in case of error and another in case of success
+  - `Try` to wrap methods that throw exceptions and return a result instead 
+  - ...
+
+# Comparison between the patterns
+
+Let's build the same example with the different patterns we saw: We have two methods `One` and `Two` that have to handle an erroneous case. `Two` takes the result of the first one as a parameter. If one of them fails we have to return a fallback value.  
+
+## Exception pattern
+
+```csharp
+try
+{
+    var value = One();
+    return Two(value);
+}
+catch(Exception)
+{
+    return fallbackValue;
+}
+```
+
+## Check and Do pattern
+
+```csharp
+if(!CanDoOne())
+{
+  return fallbackValue;
+}
+
+var value = One();
+
+if(!CanDoTwo(value))
+{
+    return fallbackValue;
+}
+
+return Two(value);
+```
+
+## Try pattern
+
+```csharp
+if(!TryOne(out var value) && !TryTwo(value, out var result))
+{
+    return fallbackValue;
+}
+return result;
+```
+
+## Result pattern
+
+```csharp
+return One().Then(x => Two(x)).Or(fallbackValue);
+```
+
+From what we saw, what's your favorite pattern?
