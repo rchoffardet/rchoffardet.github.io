@@ -1,6 +1,6 @@
 ---
 title: "Error handling in .NET Part2: The Try and the Result patterns"
-date: 2023-02-01T00:10:00
+date: 2024-02-01T00:10:00
 draft: false
 summary: 
 tags: 
