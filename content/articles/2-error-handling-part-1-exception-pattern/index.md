@@ -186,5 +186,6 @@ We'll see other ways to handle errors in future articles.
 - In terms of DX, they have drawbacks, but their benefits outweigh them
 - Microsoft recommends keeping their usage to the minimum
 
+Next time, we'll the [alternative to exceptions](../3-error-handling-part-2-try-pattern-and-result-patterns/)
 Please, let me know if I made mistakes and/or if any passages are unclear.
 Don't hesitate to react or comment below, I will gladly reply to your comments.

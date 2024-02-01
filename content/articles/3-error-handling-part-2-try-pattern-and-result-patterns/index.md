@@ -155,4 +155,6 @@ return result;
 return One().Then(x => Two(x)).Or(fallbackValue);
 ```
 
-From what we saw, what's your favorite pattern?
+These examples conclude this blog post. What's your favorite?
+Please, let me know if I made mistakes and/or if any passages are unclear.
+Don't hesitate to react or comment below, I will gladly reply to your comments.
