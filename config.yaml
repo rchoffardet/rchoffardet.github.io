@@ -81,4 +81,4 @@ params:
     keys: ["title", "permalink", "summary", "content", "tags"]
 
   cover:
-    hidden: true
+    hiddenInList: true
