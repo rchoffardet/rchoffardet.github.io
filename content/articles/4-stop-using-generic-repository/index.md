@@ -8,6 +8,8 @@ tags:
  - dotnet
  - design pattern
  - controversial
+cover:
+  image: banner.png
 ---
 
 Before we enter this topic, here is a quick reminder of the Repository pattern (the real, non-generic, one), as found in the book [Patterns of Enterprise Application Architecture](https://martinfowler.com/books/eaa.html).
