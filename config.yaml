@@ -62,6 +62,8 @@ params:
       url: "https://github.com/rchoffardet"
     - name: twitter
       url: "https://twitter.com/CaptainSpic"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/robin-choffardet/"
     - name: Rss
       url: "index.xml"
 
