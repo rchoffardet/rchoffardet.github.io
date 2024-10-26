@@ -22,7 +22,7 @@ First of all, you should be aware that the use of `async void` is notorious and 
 
 ## What is `async void` and why did I use it despite the warnings?
 
-When writing asynchronous methods, the method is markes as `async` and its return type is usually either `Task` or `Task<T>`. But it's also possible to return `void` instead of a task. This happens when trying to use synchronous code you don't own (or can't change) while making asynchronous operation.
+When writing asynchronous methods, the method is markes as `async` and its return type is usually either `Task` or `Task<T>`. But it's also possible to return `void` instead of a task. This happens when trying to use synchronous code you don't own (or can't change) while making asynchronous operations.
 
 In my case, I was registering an asynchronous callback as a synchronous method to handle configuration changes:
 
@@ -33,39 +33,40 @@ public void Register(IOptionsMonitor<MyServiceOptions> options)
     options.Onchange(async () => { /* ... */ });
 }
 ```
-The .NET API doesn't allow an asynchronous delegate to be passed here. It's [a known issue](https://github.com/dotnet/runtime/issues/69099) (filed by David Fowler) that has been reporterd a few years ago, in the .NET runtime's GitHub repository.
+The .NET API doesn't allow a normal asynchronous delegate (one that returns a task) to be passed here. It's [a known issue](https://github.com/dotnet/runtime/issues/69099) (filed by David Fowler) that has been reporterd a few years ago, in the .NET runtime's GitHub repository.
 
-David speaks of two potential workarounds: either use `async void` or block the thread. In my work context (I work in a high QPS and low-latency environment), blocking the thread is not an option. So, I opted for `async void`, thinking it would be fine...
+David speaks of two potential workarounds: either use `async void` or block the thread. In my work context (I work in a high QPS and low-latency environment), blocking the thread is not an option.  
+So, I opted for `async void`, thinking it would be fine...
 
 Spoiler alert: it wasn't.
 
 ## What happened?
 
-So, I had a asynchronous callback registered to this synchronous `OnChange` method and because of a bug a change of configuration threw an exception. This immediately caused all apps running the code to crash, and the bug prevented them to restart properly. Fortunately, the configuration change was reverted and the apps were able to restart 😰
+So, I had a asynchronous callback registered to this synchronous `OnChange` method and because of a bug, a change of configuration threw an exception. This immediately caused all apps running the code to crash, and the bug prevented them to restart properly. Fortunately, the configuration change could be easily reverted and the apps were able to restart 😰
 
-The bug was already quite severe but the `async void` callback caused the discontinuity of service.
+The bug was quite severe in itself, but it's the `async void` callback that caused the discontinuity of service.
 
 ## Why throwing an exception in a `async void` method makes the app crash?
 
-That's complicated because it's not always true. For example it does not for console or GUI apps, but it does for ASP.NET apps by default. The reason is because there is no `SynchronizationContext` in ASP.NET.
+That's complicated because it's not always true. For example, it does not crash  console or GUI apps, but it does for ASP.NET apps, by default. The reason is because there is no `SynchronizationContext` in ASP.NET.
 
-### What is the `SynchronizationContext`?
+### What is the `SynchronizationContext` and what does it have to do with `async void`?
 
-The `SynchronizationContext` ensures that an async method that started on the UI thread, will continue its execution on the same one once the async call has been awaited. This has the advantage of avoiding multi-threading issues, but at the cost of lower performance (and sometimes other issues). In ASP.NET, there is no UI thread and there is no need for to end executing on the same thread. On the other hand, we want to maximize the performance of our apps, hence, there is no need for the `SynchronizationContext`.
+The `SynchronizationContext` ensures that an async method that started on the UI thread, will continue its execution on the same one once the async call has been awaited. This has the advantage of avoiding multi-threading issues, at the cost of lower performance (and sometimes other issues). In ASP.NET, there is no UI thread and there is no need to continue the execution on the same thread: ASP.NET internals have been made to deal with multi-threading. On the other hand, we want to maximize the performance of our apps, hence, there is no need for the `SynchronizationContext`.
 
-### What SynchronizationContext has to do with `async void`?
+The obvious difference between `async void` and `async Task` is their return type: In the former method, there is none. This is a major difference for exception handling.
 
-The obvious difference between `async void` and `async Task` is their return type. In the former method, there is none. This is a major difference for exception handling.
-
-In a `async Task` case, when an exception occurs in the async call, it can't really be handled immediatly because it's not happening in the same context of execution, and probably not on the same thread. Instead, the exception is stored in the `Task` instance and will rethrown once the async call is awaited and the execution of the caller is resumed.
+In a `async Task` case, when an exception occurs in the async part, it can't be handled immediatly because it's not happening in the same context of execution. Instead, the exception is stored in the `Task` instance and will rethrown once the async call is awaited and the execution of the caller is resumed.
 
 In a `async void` case, there is no `Task`. Instead, the exception is stored in the `SynchronizationContext` as a fallback. But in ASP.NET (with no `SynchronizationContext`), the application can't do anything with the exceptions, and crashes.
 
-It's quite surprising at the first. At least, it surpising to me that the application decides to crash by itself. But diving in the .NET internals proved it. Let's do it again, together.
+It's quite surprising at the first. At least, it was surpising to me that the application decides to crash by itself. But diving in the .NET internals proved it.  
+Let's do it again, together.
 
 ## Diving into .NET internals
 
-Before that, you must know that async/await is one the high-level feature that has no meaning in the .NET CLR, but does in C#. To be able to execute async code on the CLR, the compiler has to translate it into "low-level" code. This step is called "lowering". It is completely transparent to the developer, but if we want to understand what's going on, we have to be able to see it. To do so, I use a quite handy online tool called [sharplab.io](https://sharplab.io/). 
+Before that, you must know that async/await is one the high-level feature that has no meaning in the .NET CLR, but does in C#. To be able to execute async code on the CLR, the compiler has to translate it into "low-level" code. This step is called "lowering". It is completely transparent to the developer, but if we want to understand what's going on, we have to be able to see it.  
+To do so, I use a quite handy online tool called [sharplab.io](https://sharplab.io/). 
 
 ### Lowering a "normal" async method
 
@@ -80,7 +81,7 @@ public class MyClass {
 ```
 See the lowered version [here](https://sharplab.io/#v2:CYLg1APgAgDABFAjAVgNwFgBQWoGYEBMcAsgJ4DCANgIYDOtcA3lnKwvlABwIBscAcgHsATgFtqlAIK1SAOwDGACgCUTFmw1QAnLwB0ATQCWAU0rAVGTBoC+Wa0A).
 
-I won't describe how this all works, it might be the subject of another article one day. Let's focus on our issue.
+I won't describe the whole generated part, it might be the subject of another article one day. Let's focus on our issue.
 
 The main points of focus, are:
  1. The async method body is converted in and replaced by a state machine
@@ -109,7 +110,7 @@ catch (Exception exception)
 }
 ```
 
-So let's what this does by looking at the source of the .NET runtime!
+From there, we can read the source of the .NET CLR:
 
 [AsyncTaskMethodBuilder.cs,119](https://source.dot.net/#System.Private.CoreLib/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncTaskMethodBuilder.cs,119):
 ```c#
@@ -151,7 +152,7 @@ The main difference between the two codes is this line:
 ```C#
 stateMachine.<>t__builder = AsyncVoidMethodBuilder.Create();
 ```
-Check [here](https://www.diffchecker.com/OS465t7y/) for the diff.
+Check the diff [here](https://www.diffchecker.com/OS465t7y/).
 
 So the type of the class changed. Let's see if the behavior changed as well for handling the exception.
 
@@ -199,8 +200,9 @@ We saw that I had to alternatives to chose from, either:
 - Block the thread
 - Use `async void`
 
-The first option is not an option, and the second option isn't an option either.
-Let's introduce a third option: use `Task.Run()` to execute the task:
+As we saw earlier, the first option is not an option. And following the investigation we've done the second option isn't an option either.
+
+Fortunately, there is a third option, use `Task.Run()` to execute the task:
 
 ```C#
 public void Register(IOptionsMonitor<MyServiceOptions> options)
